@@ -1,0 +1,16 @@
+{
+  "dependencies": {
+    "js-yaml": "^4.1.0",
+    "mysql2": "^3.9.2",
+    "chokidar": "^3.6.0",
+    "@types/mysql": "^2.15.25",
+    "date-fns": "^3.3.1",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "react-router-dom": "^6.22.1",
+    "lucide-react": "^0.330.0",
+    "sqlite3": "^5.1.7",
+    "sqlite": "^5.1.1",
+    "recharts": "^2.12.0"
+  }
+}
