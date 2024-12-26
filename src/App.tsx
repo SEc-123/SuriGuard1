@@ -6,7 +6,7 @@ import Login from './pages/auth/Login';
 import Dashboard from './pages/Dashboard';
 import UserList from './pages/users/UserList';
 import Settings from './pages/settings/Settings';
-import RulesList from './pages/rules/RulesList';
+import RulesManagement from './pages/rules/RulesManagement';
 import LogManagement from './pages/logs/LogManagement';
 import EventList from './pages/events/EventList';
 
@@ -24,6 +24,22 @@ function App() {
           </PrivateRoute>
         } />
         
+        <Route path="/monitor" element={
+          <PrivateRoute requiredPermission="monitor">
+            <AppLayout>
+              <div className="p-6">Real-time Monitor</div>
+            </AppLayout>
+          </PrivateRoute>
+        } />
+        
+        <Route path="/logs/*" element={
+          <PrivateRoute requiredPermission="logs">
+            <AppLayout>
+              <LogManagement />
+            </AppLayout>
+          </PrivateRoute>
+        } />
+        
         <Route path="/events" element={
           <PrivateRoute requiredPermission="events">
             <AppLayout>
@@ -32,7 +48,29 @@ function App() {
           </PrivateRoute>
         } />
         
-        {/* Other existing routes... */}
+        <Route path="/rules" element={
+          <PrivateRoute requiredPermission="rules">
+            <AppLayout>
+              <RulesManagement />
+            </AppLayout>
+          </PrivateRoute>
+        } />
+        
+        <Route path="/users" element={
+          <PrivateRoute requiredPermission="users">
+            <AppLayout>
+              <UserList />
+            </AppLayout>
+          </PrivateRoute>
+        } />
+        
+        <Route path="/settings" element={
+          <PrivateRoute requiredPermission="settings">
+            <AppLayout>
+              <Settings />
+            </AppLayout>
+          </PrivateRoute>
+        } />
       </Routes>
     </Router>
   );

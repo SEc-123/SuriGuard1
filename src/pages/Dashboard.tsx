@@ -1,120 +1,94 @@
 import React, { useState, useEffect } from 'react';
-import { BarChart3, Users, Shield, AlertTriangle, Activity } from 'lucide-react';
+import ServerStatusCard from './dashboard/components/ServerStatusCard';
+import LogSummaryCard from './dashboard/components/LogSummaryCard';
+import EventSummaryCard from './dashboard/components/EventSummaryCard';
+import RecentEventsTable from './dashboard/components/RecentEventsTable';
 import { getLogStats } from '../services/logService';
 import { getEvents } from '../services/eventService';
-import { getRuleStats } from '../services/rulesService';
-import { getUsers } from '../services/userService';
-import StatCard from './dashboard/components/StatCard';
-import TrendChart from './dashboard/components/TrendChart';
-import EventsList from './dashboard/components/EventsList';
-import RuleStats from './dashboard/components/RuleStats';
-import UserActivity from './dashboard/components/UserActivity';
+import { getServerStatus } from '../services/systemService';
 
 export default function Dashboard() {
-  const [stats, setStats] = useState({
-    alerts: 0,
-    events: 0,
-    rules: 0,
-    users: 0
+  const [serverStatus, setServerStatus] = useState({
+    uptime: '0:00:00',
+    cpuUsage: 0,
+    memoryUsage: 0,
+    networkLoad: 0
   });
 
-  const [loading, setLoading] = useState(true);
+  const [logStats, setLogStats] = useState({
+    totalLogs: 0,
+    alertLogs: 0,
+    dnsLogs: 0,
+    httpLogs: 0,
+    lastUpdate: new Date().toLocaleString()
+  });
+
+  const [eventStats, setEventStats] = useState({
+    pendingEvents: 0,
+    investigatingEvents: 0,
+    completedEvents: 0,
+    criticalEvents: 0
+  });
+
+  const [recentEvents, setRecentEvents] = useState([]);
 
   useEffect(() => {
+    const loadDashboardData = async () => {
+      try {
+        // Load server status
+        const status = await getServerStatus();
+        setServerStatus(status);
+
+        // Load log statistics
+        const logs = await getLogStats();
+        setLogStats({
+          totalLogs: logs.total,
+          alertLogs: logs.alerts,
+          dnsLogs: logs.dns,
+          httpLogs: logs.http,
+          lastUpdate: new Date().toLocaleString()
+        });
+
+        // Load events
+        const events = await getEvents({ limit: 5 });
+        setRecentEvents(events.data);
+
+        // Calculate event statistics
+        const stats = events.data.reduce((acc, event) => {
+          acc[`${event.current_stage.toLowerCase()}Events`]++;
+          if (event.severity === 1) acc.criticalEvents++;
+          return acc;
+        }, {
+          pendingEvents: 0,
+          investigatingEvents: 0,
+          completedEvents: 0,
+          criticalEvents: 0
+        });
+        setEventStats(stats);
+      } catch (error) {
+        console.error('Failed to load dashboard data:', error);
+      }
+    };
+
     loadDashboardData();
+    const interval = setInterval(loadDashboardData, 30000); // Refresh every 30 seconds
+
+    return () => clearInterval(interval);
   }, []);
 
-  const loadDashboardData = async () => {
-    try {
-      const [logStats, events, ruleStats, users] = await Promise.all([
-        getLogStats(),
-        getEvents(),
-        getRuleStats(),
-        getUsers()
-      ]);
-
-      setStats({
-        alerts: logStats.alerts,
-        events: events.length,
-        rules: ruleStats.total,
-        users: users.length
-      });
-    } catch (error) {
-      console.error('Failed to load dashboard data:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  if (loading) {
-    return (
-      <div className="flex items-center justify-center h-screen">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
-      </div>
-    );
-  }
-
   return (
-    <div className="p-6">
-      <h1 className="text-2xl font-bold mb-6">仪表盘</h1>
+    <div className="p-6 space-y-6">
+      <h1 className="text-2xl font-bold">Dashboard</h1>
       
-      {/* 统计卡片 */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-        <StatCard
-          icon={AlertTriangle}
-          label="告警总数"
-          value={stats.alerts}
-          trend="+12%"
-          trendType="up"
-        />
-        <StatCard
-          icon={Activity}
-          label="活跃事件"
-          value={stats.events}
-          trend="-8%"
-          trendType="down"
-        />
-        <StatCard
-          icon={Shield}
-          label="规则总数"
-          value={stats.rules}
-          trend="+3%"
-          trendType="up"
-        />
-        <StatCard
-          icon={Users}
-          label="用户总数"
-          value={stats.users}
-          trend="+5%"
-          trendType="up"
-        />
-      </div>
-
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-        {/* 趋势图表 */}
-        <div className="bg-white rounded-lg p-6 shadow-sm">
-          <h2 className="text-lg font-semibold mb-4">告警趋势</h2>
-          <TrendChart />
-        </div>
-
-        {/* 最新事件 */}
-        <div className="bg-white rounded-lg p-6 shadow-sm">
-          <h2 className="text-lg font-semibold mb-4">最新事件</h2>
-          <EventsList />
-        </div>
-      </div>
-
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* 规则统计 */}
-        <div className="bg-white rounded-lg p-6 shadow-sm">
-          <h2 className="text-lg font-semibold mb-4">规则统计</h2>
-          <RuleStats />
-        </div>
-
-        {/* 用户活动 */}
-        <div className="bg-white rounded-lg p-6 shadow-sm">
-          <h2 className="text-lg font-semibold mb-4">用户活动</h2>
-          <UserActivity />
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        {/* First row */}
+        <ServerStatusCard {...serverStatus} />
+        <LogSummaryCard {...logStats} />
+        
+        {/* Event Summary and Recent Events side by side */}
+        <div className="lg:col-span-1 grid grid-rows-[auto_1fr] gap-6">
+          <EventSummaryCard {...eventStats} />
+          <RecentEventsTable events={recentEvents} />
         </div>
       </div>
     </div>

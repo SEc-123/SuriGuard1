@@ -1,117 +1,45 @@
-import { readYAMLConfig, getSuricataConfigPath } from '../config/core.config';
-import { Rule, parseRule, formatRule, toggleRule } from '../utils/ruleParser';
-import * as fs from 'fs';
-import * as path from 'path';
+import { getSuricataConfigPath } from '../config/core.config';
+import { Rule, parseRule, formatRule } from '../utils/ruleParser';
+import { readSuricataConfig } from './yamlService';
+import { readRuleFile, updateRuleInFile, toggleRuleInFile, addRuleToFile, deleteRuleFromFile } from './ruleFileService';
 
 export const getRuleFiles = async (): Promise<string[]> => {
   try {
-    const config = readYAMLConfig();
-    return config['rule-files'] || [];
+    const configPath = getSuricataConfigPath();
+    const config = await readSuricataConfig(configPath);
+    return config.rule_files || [];
   } catch (error) {
-    console.error('Failed to read rule files from config:', error);
-    throw new Error('Failed to fetch rule files');
+    console.error('Failed to get rule files:', error);
+    throw error;
   }
 };
 
 export const getRuleFileContent = async (filePath: string): Promise<Rule[]> => {
   try {
-    const configDir = path.dirname(getSuricataConfigPath());
-    const absolutePath = path.resolve(configDir, filePath);
-    
-    const content = fs.readFileSync(absolutePath, 'utf8');
+    const content = await readRuleFile(filePath);
     return content
       .split('\n')
-      .filter(line => line.trim())
+      .filter(line => line.trim() && !line.trim().startsWith('#'))
       .map(line => parseRule(line))
       .filter((rule): rule is Rule => rule !== null);
   } catch (error) {
-    console.error('Failed to read rule file:', error);
-    throw new Error('Failed to fetch rule file content');
+    console.error('Failed to get rule file content:', error);
+    throw error;
   }
+};
+
+export const updateRule = async (filePath: string, rule: Rule): Promise<void> => {
+  await updateRuleInFile(filePath, rule);
 };
 
 export const addRule = async (filePath: string, rule: Rule): Promise<void> => {
-  try {
-    const configDir = path.dirname(getSuricataConfigPath());
-    const absolutePath = path.resolve(configDir, filePath);
-    
-    const content = fs.readFileSync(absolutePath, 'utf8');
-    const formattedRule = formatRule(rule);
-    
-    fs.writeFileSync(absolutePath, `${content}\n${formattedRule}`);
-  } catch (error) {
-    console.error('Failed to add rule:', error);
-    throw new Error('Failed to add rule');
-  }
-};
-
-export const updateRule = async (filePath: string, updatedRule: Rule): Promise<void> => {
-  try {
-    const configDir = path.dirname(getSuricataConfigPath());
-    const absolutePath = path.resolve(configDir, filePath);
-    
-    const content = fs.readFileSync(absolutePath, 'utf8');
-    const rules = content
-      .split('\n')
-      .filter(line => line.trim());
-    
-    const updatedRules = rules.map(line => {
-      const rule = parseRule(line);
-      if (rule && rule.options.sid === updatedRule.options.sid) {
-        return formatRule(updatedRule);
-      }
-      return line;
-    });
-    
-    fs.writeFileSync(absolutePath, updatedRules.join('\n'));
-  } catch (error) {
-    console.error('Failed to update rule:', error);
-    throw new Error('Failed to update rule');
-  }
+  await addRuleToFile(filePath, rule);
 };
 
 export const deleteRule = async (filePath: string, sid: string): Promise<void> => {
-  try {
-    const configDir = path.dirname(getSuricataConfigPath());
-    const absolutePath = path.resolve(configDir, filePath);
-    
-    const content = fs.readFileSync(absolutePath, 'utf8');
-    const rules = content
-      .split('\n')
-      .filter(line => line.trim())
-      .filter(line => {
-        const rule = parseRule(line);
-        return rule?.options.sid !== sid;
-      });
-    
-    fs.writeFileSync(absolutePath, rules.join('\n'));
-  } catch (error) {
-    console.error('Failed to delete rule:', error);
-    throw new Error('Failed to delete rule');
-  }
+  await deleteRuleFromFile(filePath, sid);
 };
 
 export const toggleRuleStatus = async (filePath: string, rule: Rule): Promise<void> => {
-  try {
-    const configDir = path.dirname(getSuricataConfigPath());
-    const absolutePath = path.resolve(configDir, filePath);
-    
-    const content = fs.readFileSync(absolutePath, 'utf8');
-    const rules = content
-      .split('\n')
-      .filter(line => line.trim());
-    
-    const updatedRules = rules.map(line => {
-      const currentRule = parseRule(line);
-      if (currentRule && currentRule.options.sid === rule.options.sid) {
-        return formatRule(toggleRule(rule));
-      }
-      return line;
-    });
-    
-    fs.writeFileSync(absolutePath, updatedRules.join('\n'));
-  } catch (error) {
-    console.error('Failed to toggle rule status:', error);
-    throw new Error('Failed to toggle rule status');
-  }
+  await toggleRuleInFile(filePath, rule);
 };

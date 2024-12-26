@@ -1,180 +1,131 @@
 import React, { useState, useEffect } from 'react';
-import { Plus, Search, Edit2, Trash2, MoreVertical } from 'lucide-react';
-import { getUsers, deleteUser } from '../../services/userService';
+import { Plus, Search, Edit2, Trash2, History } from 'lucide-react';
+import { User } from '../../types/user';
+import { getUsers, createUser, updateUser, deleteUser, getUserSessions } from '../../services/userService';
 import UserForm from './components/UserForm';
+import UserSessionsTable from './components/UserSessionsTable';
 
 export default function UserList() {
-  const [users, setUsers] = useState([]);
-  const [selectedUser, setSelectedUser] = useState(null);
-  const [showUserForm, setShowUserForm] = useState(false);
-  const [filters, setFilters] = useState({
-    search: '',
-    role: '',
-    status: ''
-  });
+  const [users, setUsers] = useState<User[]>([]);
+  const [selectedUser, setSelectedUser] = useState<User | null>(null);
+  const [showForm, setShowForm] = useState(false);
+  const [showSessions, setShowSessions] = useState(false);
+  const [sessions, setSessions] = useState([]);
+  const [formMode, setFormMode] = useState<'create' | 'edit'>('create');
+  const [searchTerm, setSearchTerm] = useState('');
 
   useEffect(() => {
     loadUsers();
-  }, [filters]);
+  }, []);
 
   const loadUsers = async () => {
     try {
-      const data = await getUsers(filters);
+      const data = await getUsers();
       setUsers(data);
     } catch (error) {
       console.error('Failed to load users:', error);
     }
   };
 
-  const handleCreateUser = () => {
-    setSelectedUser(null);
-    setShowUserForm(true);
+  const handleCreateUser = async (userData: Partial<User> & { password?: string }) => {
+    try {
+      await createUser(userData);
+      await loadUsers();
+      setShowForm(false);
+    } catch (error) {
+      console.error('Failed to create user:', error);
+      throw error; // Re-throw to be handled by the form
+    }
   };
 
-  const handleEditUser = (user: any) => {
-    setSelectedUser(user);
-    setShowUserForm(true);
+  const handleUpdateUser = async (userData: Partial<User>) => {
+    if (!selectedUser) return;
+    try {
+      await updateUser(selectedUser.id, userData);
+      await loadUsers();
+      setShowForm(false);
+      setSelectedUser(null);
+    } catch (error) {
+      console.error('Failed to update user:', error);
+      throw error; // Re-throw to be handled by the form
+    }
   };
 
-  const handleDeleteUser = async (user: any) => {
-    if (window.confirm('确定要删除该用户吗？')) {
+  const handleDeleteUser = async (user: User) => {
+    if (window.confirm('Are you sure you want to delete this user?')) {
       try {
         await deleteUser(user.id);
-        loadUsers();
+        await loadUsers();
       } catch (error) {
         console.error('Failed to delete user:', error);
       }
     }
   };
 
+  const handleViewSessions = async (user: User) => {
+    try {
+      const userSessions = await getUserSessions(user.id);
+      setSessions(userSessions);
+      setShowSessions(true);
+    } catch (error) {
+      console.error('Failed to load user sessions:', error);
+    }
+  };
+
+  const handleCloseForm = () => {
+    setShowForm(false);
+    setSelectedUser(null);
+    setFormMode('create');
+  };
+
+  const filteredUsers = users.filter(user => 
+    user.username.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    user.email.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
   return (
     <div className="p-6">
       <div className="flex justify-between items-center mb-6">
-        <h1 className="text-2xl font-bold">用户管理</h1>
+        <h1 className="text-2xl font-bold">User Management</h1>
         <button
-          onClick={handleCreateUser}
+          onClick={() => {
+            setFormMode('create');
+            setSelectedUser(null);
+            setShowForm(true);
+          }}
           className="bg-blue-600 text-white px-4 py-2 rounded-lg flex items-center"
         >
           <Plus size={20} className="mr-2" />
-          添加用户
+          Add User
         </button>
       </div>
 
-      <div className="bg-white rounded-lg shadow-sm">
-        <div className="p-4 border-b">
-          <div className="flex items-center space-x-4">
-            <div className="relative flex-1">
-              <input
-                type="text"
-                placeholder="搜索用户..."
-                value={filters.search}
-                onChange={(e) => setFilters({ ...filters, search: e.target.value })}
-                className="w-full pl-10 pr-4 py-2 rounded-lg border focus:outline-none focus:border-blue-500"
-              />
-              <Search className="absolute left-3 top-2.5 text-gray-400" size={20} />
+      {/* Rest of the component remains the same until the modal section */}
+
+      {showForm && (
+        <UserForm
+          mode={formMode}
+          initialData={selectedUser || undefined}
+          onSubmit={formMode === 'create' ? handleCreateUser : handleUpdateUser}
+          onCancel={handleCloseForm}
+        />
+      )}
+
+      {showSessions && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg p-6 w-full max-w-4xl">
+            <div className="flex justify-between items-center mb-4">
+              <h2 className="text-xl font-semibold">User Sessions</h2>
+              <button
+                onClick={() => setShowSessions(false)}
+                className="text-gray-500 hover:text-gray-700"
+              >
+                ×
+              </button>
             </div>
-            <select
-              value={filters.role}
-              onChange={(e) => setFilters({ ...filters, role: e.target.value })}
-              className="border rounded-lg px-4 py-2 focus:outline-none focus:border-blue-500"
-            >
-              <option value="">所有角色</option>
-              <option value="admin">管理员</option>
-              <option value="user">普通用户</option>
-            </select>
-            <select
-              value={filters.status}
-              onChange={(e) => setFilters({ ...filters, status: e.target.value })}
-              className="border rounded-lg px-4 py-2 focus:outline-none focus:border-blue-500"
-            >
-              <option value="">所有状态</option>
-              <option value="active">激活</option>
-              <option value="inactive">禁用</option>
-            </select>
+            <UserSessionsTable sessions={sessions} />
           </div>
         </div>
-
-        <table className="w-full">
-          <thead className="bg-gray-50">
-            <tr>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">用户</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">角色</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">状态</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">最后登录</th>
-              <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">操作</th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-gray-200">
-            {users.map((user: any) => (
-              <tr key={user.id}>
-                <td className="px-6 py-4">
-                  <div>
-                    <div className="font-medium text-gray-900">{user.username}</div>
-                    <div className="text-sm text-gray-500">{user.email}</div>
-                  </div>
-                </td>
-                <td className="px-6 py-4">
-                  <span className={`px-2 py-1 text-xs rounded-full ${
-                    user.role === 'admin'
-                      ? 'bg-purple-100 text-purple-800'
-                      : 'bg-blue-100 text-blue-800'
-                  }`}>
-                    {user.role === 'admin' ? '管理员' : '普通用户'}
-                  </span>
-                </td>
-                <td className="px-6 py-4">
-                  <span className={`px-2 py-1 text-xs rounded-full ${
-                    user.status === 'active'
-                      ? 'bg-green-100 text-green-800'
-                      : 'bg-red-100 text-red-800'
-                  }`}>
-                    {user.status === 'active' ? '激活' : '禁用'}
-                  </span>
-                </td>
-                <td className="px-6 py-4 text-sm text-gray-500">
-                  {new Date(user.last_login).toLocaleString()}
-                </td>
-                <td className="px-6 py-4 text-right">
-                  <div className="flex items-center justify-end space-x-2">
-                    <button
-                      onClick={() => handleEditUser(user)}
-                      className="text-blue-600 hover:text-blue-900"
-                    >
-                      <Edit2 size={18} />
-                    </button>
-                    <button
-                      onClick={() => handleDeleteUser(user)}
-                      className="text-red-600 hover:text-red-900"
-                    >
-                      <Trash2 size={18} />
-                    </button>
-                  </div>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-
-      {showUserForm && (
-        <UserForm
-          user={selectedUser}
-          onSubmit={async (data) => {
-            // Handle user creation/update
-            try {
-              if (selectedUser) {
-                await updateUser(selectedUser.id, data);
-              } else {
-                await createUser(data);
-              }
-              setShowUserForm(false);
-              loadUsers();
-            } catch (error) {
-              console.error('Failed to save user:', error);
-            }
-          }}
-          onClose={() => setShowUserForm(false)}
-        />
       )}
     </div>
   );

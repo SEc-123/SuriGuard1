@@ -1,18 +1,12 @@
 import React from 'react';
-import { Shield } from 'lucide-react';
 import LoginForm from '../../components/auth/LoginForm';
+import LoginLogo from '../../components/auth/LoginLogo';
 
 export default function Login() {
   return (
-    <div className="min-h-screen bg-gray-100 flex items-center justify-center">
-      <div className="bg-white p-8 rounded-lg shadow-md w-full max-w-md">
-        <div className="flex flex-col items-center justify-center mb-8">
-          <div className="flex items-center">
-            <Shield className="text-blue-600 w-12 h-12" />
-            <h1 className="text-2xl font-bold ml-2">Suriguard</h1>
-          </div>
-          <p className="text-gray-600 mt-2 italic">for the best suricata</p>
-        </div>
+    <div className="min-h-screen bg-white flex items-center justify-center p-6">
+      <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md p-8 border border-gray-200">
+        <LoginLogo />
         <LoginForm />
       </div>
     </div>

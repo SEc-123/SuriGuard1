@@ -17,33 +17,4 @@ export const updateSuricataConfigPath = (newPath: string): void => {
   config.configPath = newPath;
 };
 
-// YAML configuration utilities
-import * as yaml from 'js-yaml';
-import * as fs from 'fs';
-
-interface YAMLConfig {
-  'rule-files': string[];
-  [key: string]: any;
-}
-
-export const readYAMLConfig = (): YAMLConfig => {
-  try {
-    const fileContents = fs.readFileSync(config.configPath, 'utf8');
-    return yaml.load(fileContents) as YAMLConfig;
-  } catch (error) {
-    console.error('Error reading YAML config:', error);
-    throw new Error('Failed to read Suricata configuration');
-  }
-};
-
-export const writeYAMLConfig = (config: YAMLConfig): void => {
-  try {
-    const yamlStr = yaml.dump(config);
-    fs.writeFileSync(config.configPath, yamlStr, 'utf8');
-  } catch (error) {
-    console.error('Error writing YAML config:', error);
-    throw new Error('Failed to write Suricata configuration');
-  }
-};
-
 export default config;

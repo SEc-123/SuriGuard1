@@ -1,88 +1,65 @@
-import sqlite3 from 'sqlite3';
-import { open } from 'sqlite';
-import { join } from 'path';
-import { User } from '../types/auth';
+import { User, UserRole, UserSession, DEFAULT_ADMIN } from '../types/user';
 
-let db: any = null;
+const API_BASE = '/api/users';
 
-const initDatabase = async () => {
-  if (!db) {
-    db = await open({
-      filename: join(process.cwd(), 'data', 'users.db'),
-      driver: sqlite3.Database
-    });
-
-    await db.exec(`
-      CREATE TABLE IF NOT EXISTS users (
-        id TEXT PRIMARY KEY,
-        username TEXT UNIQUE NOT NULL,
-        email TEXT UNIQUE NOT NULL,
-        password TEXT NOT NULL,
-        role TEXT NOT NULL,
-        status TEXT NOT NULL,
-        last_login DATETIME,
-        created_at DATETIME DEFAULT CURRENT_TIMESTAMP
-      );
-
-      CREATE TABLE IF NOT EXISTS user_permissions (
-        user_id TEXT NOT NULL,
-        permission TEXT NOT NULL,
-        PRIMARY KEY (user_id, permission),
-        FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
-      );
-
-      CREATE TABLE IF NOT EXISTS user_activities (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        user_id TEXT NOT NULL,
-        action TEXT NOT NULL,
-        details TEXT,
-        created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-        FOREIGN KEY (user_id) REFERENCES users(id)
-      );
-    `);
+export const getUsers = async (): Promise<User[]> => {
+  try {
+    const response = await fetch(API_BASE);
+    if (!response.ok) throw new Error('Failed to fetch users');
+    return await response.json();
+  } catch (error) {
+    console.error('Failed to fetch users:', error);
+    throw error;
   }
-  return db;
 };
 
-// 用户活动记录
-export const logUserActivity = async (userId: string, action: string, details?: string) => {
-  const db = await initDatabase();
-  await db.run(
-    'INSERT INTO user_activities (user_id, action, details) VALUES (?, ?, ?)',
-    [userId, action, details]
-  );
+export const createUser = async (userData: Partial<User>): Promise<User> => {
+  try {
+    const response = await fetch(API_BASE, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(userData)
+    });
+    if (!response.ok) throw new Error('Failed to create user');
+    return await response.json();
+  } catch (error) {
+    console.error('Failed to create user:', error);
+    throw error;
+  }
 };
 
-export const getUserActivities = async (limit: number = 10) => {
-  const db = await initDatabase();
-  const activities = await db.all(`
-    SELECT 
-      a.id,
-      u.username as user,
-      a.action,
-      a.created_at as time
-    FROM user_activities a
-    JOIN users u ON a.user_id = u.id
-    ORDER BY a.created_at DESC
-    LIMIT ?
-  `, [limit]);
-  
-  return activities;
+export const updateUser = async (id: string, userData: Partial<User>): Promise<User> => {
+  try {
+    const response = await fetch(`${API_BASE}/${id}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(userData)
+    });
+    if (!response.ok) throw new Error('Failed to update user');
+    return await response.json();
+  } catch (error) {
+    console.error('Failed to update user:', error);
+    throw error;
+  }
 };
 
-// 权限检查
-export const checkPermission = async (userId: string, permission: string): Promise<boolean> => {
-  const db = await initDatabase();
-  const user = await db.get('SELECT role FROM users WHERE id = ?', [userId]);
-  
-  if (user?.role === 'admin') return true;
-  
-  const userPermission = await db.get(
-    'SELECT 1 FROM user_permissions WHERE user_id = ? AND permission = ?',
-    [userId, permission]
-  );
-  
-  return !!userPermission;
+export const deleteUser = async (id: string): Promise<void> => {
+  try {
+    const response = await fetch(`${API_BASE}/${id}`, { method: 'DELETE' });
+    if (!response.ok) throw new Error('Failed to delete user');
+  } catch (error) {
+    console.error('Failed to delete user:', error);
+    throw error;
+  }
 };
 
-// 现有的用户管理功能保持不变...
+export const getUserSessions = async (userId: string): Promise<UserSession[]> => {
+  try {
+    const response = await fetch(`${API_BASE}/${userId}/sessions`);
+    if (!response.ok) throw new Error('Failed to fetch user sessions');
+    return await response.json();
+  } catch (error) {
+    console.error('Failed to fetch user sessions:', error);
+    throw error;
+  }
+};
