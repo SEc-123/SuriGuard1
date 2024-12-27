@@ -1,4 +1,4 @@
-# SuriGuard - Suricata Management System
+# SuriGuard - Suricata Open Source Management System
 
 A modern web-based management system for Suricata IDS/IPS, featuring advanced analytics and visualization capabilities.
 
