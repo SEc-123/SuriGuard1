@@ -1,166 +1,191 @@
-# Suriguard - Suricata Management System
+# SuriGuard - Suricata Management System
 
-A modern web-based management system for Suricata IDS/IPS.
+A modern web-based management system for Suricata IDS/IPS, featuring advanced analytics and visualization capabilities.
 
-## Features
+## 🌟 Key Features
 
-- 📊 Real-time Dashboard
-- 📝 Log Management & Analysis
-- 🚨 Event Management
-- 🛡️ Rules Management
-- 👥 User Management
-- ⚙️ System Settings
+- 📊 **Advanced Analytics Dashboard**
+  - Real-time data visualization
+  - Customizable charts and graphs
+  - Preset analytics templates
+  - Time-based trend analysis
 
-## Technology Stack
+- 🔍 **Enhanced Log Management**
+  - Advanced filtering system
+  - Custom filter presets
+  - Real-time log analysis
+  - Pattern recognition
 
-- Frontend: React + TypeScript + Vite
-- UI: Tailwind CSS + Lucide Icons
-- State Management: React Hooks
-- Routing: React Router
-- Database: SQLite
+- 🚨 **Event Management**
+  - Real-time event monitoring
+  - Severity-based categorization
+  - Event correlation analysis
+  - Automated response workflows
 
-## Project Structure
+- 🛡️ **Rules Management**
+  - Rule import/export
+  - Custom rule creation
+  - Rule performance monitoring
+  - Version control integration
+
+- 👥 **User Management**
+  - Role-based access control
+  - Activity monitoring
+  - Session management
+  - Audit logging
+
+## 🛠️ Technology Stack
+
+- **Frontend**
+  - React 18.3 with TypeScript
+  - Vite 5.4 for build tooling
+  - TailwindCSS for styling
+  - Lucide Icons for UI elements
+
+- **State Management**
+  - React Hooks
+  - Context API
+  - Custom service layer
+
+- **Data Storage**
+  - SQLite3 with better-sqlite3
+  - IndexedDB for client-side caching
+  - File system for log storage
+
+## 📁 Project Structure
 
 ```
 suriguard/
-├── public/                 # Static assets
-│   └── logo/              # Logo files
 ├── src/
-│   ├── components/        # Reusable components
-│   │   ├── auth/         # Authentication components
-│   │   ├── layout/       # Layout components
-│   │   └── logs/         # Log-related components
-│   ├── pages/            # Page components
-│   │   ├── auth/         # Authentication pages
-│   │   ├── dashboard/    # Dashboard
-│   │   ├── events/       # Event management
-│   │   ├── logs/         # Log management
-│   │   ├── rules/        # Rules management
-│   │   ├── settings/     # Settings
-│   │   └── users/        # User management
-│   ├── services/         # API services
-│   │   └── backend/      # Backend services
-│   ├── types/            # TypeScript type definitions
-│   └── utils/            # Utility functions
-└── database/             # SQLite database files
+│   ├── components/              # Reusable UI components
+│   │   ├── analytics/          # Analytics components
+│   │   │   ├── AnalyticsChart.tsx
+│   │   │   ├── ChartTypeSelector.tsx
+│   │   │   ├── CreateAnalyticsModal.tsx
+│   │   │   └── TimeRangeSelector.tsx
+│   │   ├── auth/              # Authentication components
+│   │   │   ├── LoginForm.tsx
+│   │   │   └── LoginLogo.tsx
+│   │   ├── Header.tsx        # Main header component
+│   │   ├── Logo.tsx          # Logo component
+│   │   └── Sidebar.tsx       # Navigation sidebar
+│   │
+│   ├── pages/                  # Page components
+│   │   ├── analytics/         # Analytics dashboard
+│   │   │   ├── AnalyticsDashboard.tsx
+│   │   │   └── components/
+│   │   │       ├── ChartRenderer.tsx
+│   │   │       ├── CreateVisualizationModal.tsx
+│   │   │       └── VisualizationCard.tsx
+│   │   ├── auth/             # Authentication pages
+│   │   │   └── Login.tsx
+│   │   ├── dashboard/        # Main dashboard
+│   │   ├── events/          # Event management
+│   │   ├── logs/           # Log management
+│   │   ├── rules/          # Rules management
+│   │   ├── settings/       # System settings
+│   │   └── users/          # User management
+│   │
+│   ├── services/               # Business logic & API
+│   │   ├── analyticsService.ts
+│   │   ├── filterService.ts
+│   │   ├── presetFilterService.ts
+│   │   ├── userService.ts
+│   │   ├── visualizationService.ts
+│   │   └── backend/          # Backend services
+│   │       └── database.ts
+│   │
+│   ├── types/                  # TypeScript definitions
+│   │   ├── analytics.ts
+│   │   ├── filter.ts
+│   │   ├── presetFilter.ts
+│   │   └── user.ts
+│   │
+│   └── utils/                  # Utility functions
+│       └── logFilters.ts
+│
+├── scripts/                    # Build & deployment scripts
+│   ├── deploy.bat             # Windows deployment script
+│   └── initDb.js             # Database initialization
+│
+├── data/                       # Database & data files
+│   └── suriguard.db          # SQLite database
+│
+└── dist/                       # Production build
 ```
 
-## Configuration
+## 🚀 Quick Start
 
-### Suricata Configuration
+1. **Prerequisites**
+   - Node.js >= 18.0.0
+   - npm >= 9.0.0
 
-The Suricata configuration path is defined in `src/config/core.config.ts`:
+2. **Installation**
+   ```bash
+   npm install
+   ```
 
-```typescript
-// Default configuration - update during initial setup
-const config: SuricataConfig = {
-  configPath: '/etc/suricata/suricata.yaml'
-};
-```
+3. **Initialize Database**
+   ```bash
+   npm run db:init
+   ```
 
-You can modify this path in the system settings UI or directly in the configuration file.
+4. **Start Development Server**
+   ```bash
+   npm run dev
+   ```
 
-### Database Configuration
+5. **Build for Production**
+   ```bash
+   npm run build
+   ```
 
-The project uses SQLite as the database. Configure the database connection in the system settings:
+## 📊 Database Schema
 
-```json
-{
-  "database": {
-    "path": "database/suriguard.db"
-  }
-}
-```
-
-## Important Security Notice: Hardcoded Admin Users
-
-There are currently hardcoded admin users in the following locations that MUST be removed in production:
-
-1. In `src/utils/auth.ts`:
-```typescript
-const USERS = {
-  admin: {
-    id: '1',
-    username: 'admin',
-    password: 'admin',
-    role: 'admin',
-    permissions: ['all']
-  }
-};
-```
-
-2. In `src/types/user.ts`:
-```typescript
-export const DEFAULT_ADMIN = {
-  id: '1',
-  username: 'admin',
-  password: 'admin123',
-  email: 'admin@suriguard.com',
-  role: 'super_admin'
-};
-```
-
-### Removing Hardcoded Users
-
-IMPORTANT: Before removing hardcoded users:
-1. Set up proper user management with database storage
-2. Create a real admin account through the user management interface
-3. Test the new admin account login
-4. Only then remove the hardcoded user data
-
-The application is designed to work without these hardcoded users once proper user management is configured.
-
-## Development Guide
-
-1. Install dependencies:
-```bash
-npm install
-```
-
-2. Start development server:
-```bash
-npm run dev
-```
-
-3. Build for production:
-```bash
-npm run build
-```
-
-## Database Schema
-
-### Users Table
+### Preset Filters
 ```sql
-CREATE TABLE users (
+CREATE TABLE preset_filters (
   id TEXT PRIMARY KEY,
-  username TEXT UNIQUE NOT NULL,
-  email TEXT UNIQUE NOT NULL,
-  password_hash TEXT NOT NULL,
-  role TEXT NOT NULL,
-  status TEXT NOT NULL DEFAULT 'active',
-  last_login TEXT,
+  name TEXT NOT NULL,
+  description TEXT,
+  conditions TEXT NOT NULL,
+  is_system INTEGER DEFAULT 0,
   created_at TEXT NOT NULL,
   updated_at TEXT NOT NULL
 );
 ```
 
-### Events Table
+### Analytics
 ```sql
-CREATE TABLE events (
-  id INTEGER PRIMARY KEY AUTOINCREMENT,
-  start_time DATETIME NOT NULL,
-  end_time DATETIME,
-  src_ip TEXT NOT NULL,
-  dst_ip TEXT NOT NULL,
-  protocol TEXT NOT NULL,
-  rule_id INTEGER NOT NULL,
-  severity INTEGER NOT NULL,
-  current_stage TEXT DEFAULT 'Pending',
-  handler TEXT,
-  last_update DATETIME NOT NULL
+CREATE TABLE preset_analytics (
+  id TEXT PRIMARY KEY,
+  name TEXT NOT NULL,
+  filter_id TEXT NOT NULL,
+  chart_type TEXT NOT NULL,
+  aggregation TEXT NOT NULL,
+  group_by TEXT NOT NULL,
+  time_range TEXT,
+  FOREIGN KEY (filter_id) REFERENCES preset_filters(id)
 );
 ```
 
-## License
+## 🔄 Version History
+
+- **v1.2.0** - Major Update
+  - Added advanced analytics dashboard
+  - Implemented preset filters system
+  - Fixed display bugs
+  - Resolved Node.js vulnerabilities
+  - Migrated to SQLite for better performance
+
+- **v1.1.1** - Security Update
+  - Fixed Node.js vulnerabilities
+  - Improved database handling
+
+## 📝 License
 
 [MIT License](LICENSE)
+
+## 🤝 Contributing
+
+Contributions are welcome! Please read our [Contributing Guide](CONTRIBUTING.md) for details on our code of conduct and the process for submitting pull requests.
