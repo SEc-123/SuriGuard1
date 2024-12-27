@@ -1,36 +1,60 @@
-// Update the events table schema to use English
-await db.exec(`
-  CREATE TABLE IF NOT EXISTS events (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    start_time DATETIME NOT NULL,
-    end_time DATETIME,
-    src_ip TEXT NOT NULL,
-    dst_ip TEXT NOT NULL,
-    protocol TEXT NOT NULL,
-    rule_id INTEGER NOT NULL,
-    severity INTEGER NOT NULL,
-    current_stage TEXT DEFAULT 'Pending',
-    handler TEXT,
-    last_update DATETIME NOT NULL,
-    
-    confirm_status TEXT,
-    confirm_handler TEXT,
-    confirm_result TEXT,
-    confirm_reason TEXT,
-    confirm_time DATETIME,
-    
-    investigation_status TEXT,
-    investigation_handler TEXT,
-    investigation_result TEXT,
-    investigation_reason TEXT,
-    investigation_time DATETIME,
-    
-    completion_result TEXT,
-    completion_reason TEXT,
-    completion_time DATETIME
-  );
+import { openDB, DBSchema } from 'idb';
 
-  CREATE INDEX IF NOT EXISTS idx_events_start_time ON events(start_time);
-  CREATE INDEX IF NOT EXISTS idx_events_current_stage ON events(current_stage);
-  CREATE INDEX IF NOT EXISTS idx_events_severity ON events(severity);
-`);
+interface SuriguardDB extends DBSchema {
+  preset_filters: {
+    key: string;
+    value: {
+      id?: string;
+      name: string;
+      description?: string;
+      conditions: any[];
+      isSystem?: boolean;
+      createdAt: string;
+      updatedAt: string;
+    };
+  };
+  preset_analytics: {
+    key: string;
+    value: {
+      id?: string;
+      name: string;
+      filterId: string;
+      chartType: 'bar' | 'line' | 'pie';
+      aggregation: 'count' | 'sum' | 'avg';
+      groupBy: string;
+      timeRange?: string;
+    };
+    indexes: { 'by-filter-id': string };
+  };
+}
+
+const DB_NAME = 'suriguard-db';
+const DB_VERSION = 1;
+
+export async function initializeDb() {
+  const db = await openDB<SuriguardDB>(DB_NAME, DB_VERSION, {
+    upgrade(db) {
+      // Create preset_filters store
+      if (!db.objectStoreNames.contains('preset_filters')) {
+        db.createObjectStore('preset_filters', { keyPath: 'id' });
+      }
+
+      // Create preset_analytics store
+      if (!db.objectStoreNames.contains('preset_analytics')) {
+        const store = db.createObjectStore('preset_analytics', { keyPath: 'id' });
+        store.createIndex('by-filter-id', 'filterId');
+      }
+    }
+  });
+
+  return db;
+}
+
+let dbPromise: Promise<any> | null = null;
+
+export function getDb() {
+  if (!dbPromise) {
+    dbPromise = initializeDb();
+  }
+  return dbPromise;
+}

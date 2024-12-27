@@ -1,10 +1,11 @@
 import React from 'react';
+import suriguardLogo from '/logo/suriguard-logo.png';
 
 export default function LoginLogo() {
   return (
     <div className="flex flex-col items-center mb-8">
       <img 
-        src="/logo/suriguard-logo.png" 
+        src={suriguardLogo} 
         alt="Suriguard Logo" 
         className="w-64 h-64 object-contain mb-4"
       />

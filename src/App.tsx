@@ -4,6 +4,7 @@ import PrivateRoute from './components/auth/PrivateRoute';
 import AppLayout from './components/layout/AppLayout';
 import Login from './pages/auth/Login';
 import Dashboard from './pages/Dashboard';
+import AnalyticsDashboard from './pages/analytics/AnalyticsDashboard';
 import UserList from './pages/users/UserList';
 import Settings from './pages/settings/Settings';
 import RulesManagement from './pages/rules/RulesManagement';
@@ -12,7 +13,7 @@ import LogList from './pages/logs/LogList';
 import LogAnalytics from './pages/logs/LogAnalytics';
 import EventList from './pages/events/EventList';
 
-function App() {
+export default function App() {
   return (
     <Router>
       <Routes>
@@ -26,10 +27,10 @@ function App() {
           </PrivateRoute>
         } />
         
-        <Route path="/monitor" element={
-          <PrivateRoute requiredPermission="monitor">
+        <Route path="/analytics" element={
+          <PrivateRoute requiredPermission="analytics">
             <AppLayout>
-              <div className="p-6">Real-time Monitor</div>
+              <AnalyticsDashboard />
             </AppLayout>
           </PrivateRoute>
         } />
@@ -81,5 +82,3 @@ function App() {
     </Router>
   );
 }
-
-export default App;
