@@ -1,38 +1,62 @@
 # SuriGuard - Suricata Open Source Management System
 
 A modern web-based management system for Suricata IDS/IPS, featuring advanced analytics and visualization capabilities.
+![image](https://github.com/user-attachments/assets/4af2f8ae-0342-4e5f-931d-f3fe7ab67058)
 
 ## 🌟 Key Features
 
-- 📊 **Advanced Analytics Dashboard**
-  - Real-time data visualization
-  - Customizable charts and graphs
-  - Preset analytics templates
-  - Time-based trend analysis
+![image](https://github.com/user-attachments/assets/9f01d805-baf7-481e-ad33-1260f258d9a1)
+![image](https://github.com/user-attachments/assets/2da0d239-424b-4a9e-8385-3c656ea7ec40)
+![image](https://github.com/user-attachments/assets/000e032b-dcf0-4cd3-9781-c202bead77a8)
+![image](https://github.com/user-attachments/assets/9715c205-e66f-45de-988a-94619e9124b7)
+![image](https://github.com/user-attachments/assets/7ff116da-61b6-4b92-b4cf-3a7273dfcd4e)
 
-- 🔍 **Enhanced Log Management**
-  - Advanced filtering system
-  - Custom filter presets
-  - Real-time log analysis
-  - Pattern recognition
+- 🛡️ **Suricata Configuration Management**
+  - Real-time Suricata configuration view and edit
+  - Configuration file path management
+  - Live configuration content preview
+  - One-click Suricata service restart
 
-- 🚨 **Event Management**
-  - Real-time event monitoring
-  - Severity-based categorization
+- 📊 **System Performance Monitoring**
+  - Real-time server resource tracking
+  - CPU usage monitoring
+  - Memory consumption analysis
+  - Network load tracking
+  - System uptime statistics
+
+- 🚨 **Security Event Management**
+  - Real-time event monitoring and tracking
+  - Event severity classification
   - Event correlation analysis
-  - Automated response workflows
+  - Automated event response workflows
+  - Event processing stage management
 
-- 🛡️ **Rules Management**
-  - Rule import/export
+- 📋 **Rule Management System**
+  - Rule file import/export
   - Custom rule creation
+  - Rule status toggling
   - Rule performance monitoring
-  - Version control integration
+  - Rule parsing and formatting
+
+- 🔍 **Log Analysis**
+  - Multi-type log capture
+  - Real-time log monitoring
+  - Log filtering and retrieval
+  - Detailed log event analysis
+  - Multi-dimensional log statistics
 
 - 👥 **User Management**
   - Role-based access control
-  - Activity monitoring
-  - Session management
-  - Audit logging
+  - User authentication and authorization
+  - User session management
+  - Login/logout auditing
+  - User activity tracking
+
+- ⚙️ **System Configuration**
+  - Database connection configuration
+  - System parameter adjustment
+  - Integration and extension settings
+  - Security configuration management
 
 ## 🛠️ Technology Stack
 
