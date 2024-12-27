@@ -4,12 +4,6 @@ A modern web-based management system for Suricata IDS/IPS, featuring advanced an
 
 ## 🌟 Key Features
 
-![image](https://github.com/user-attachments/assets/9f01d805-baf7-481e-ad33-1260f258d9a1)
-![image](https://github.com/user-attachments/assets/2da0d239-424b-4a9e-8385-3c656ea7ec40)
-![image](https://github.com/user-attachments/assets/000e032b-dcf0-4cd3-9781-c202bead77a8)
-![image](https://github.com/user-attachments/assets/9715c205-e66f-45de-988a-94619e9124b7)
-![image](https://github.com/user-attachments/assets/7ff116da-61b6-4b92-b4cf-3a7273dfcd4e)
-
 - 🛡️ **Suricata Configuration Management**
   - Real-time Suricata configuration view and edit
   - Configuration file path management
@@ -56,6 +50,14 @@ A modern web-based management system for Suricata IDS/IPS, featuring advanced an
   - System parameter adjustment
   - Integration and extension settings
   - Security configuration management
+
+
+![image](https://github.com/user-attachments/assets/9f01d805-baf7-481e-ad33-1260f258d9a1)
+![image](https://github.com/user-attachments/assets/2da0d239-424b-4a9e-8385-3c656ea7ec40)
+![image](https://github.com/user-attachments/assets/000e032b-dcf0-4cd3-9781-c202bead77a8)
+![image](https://github.com/user-attachments/assets/9715c205-e66f-45de-988a-94619e9124b7)
+![image](https://github.com/user-attachments/assets/7ff116da-61b6-4b92-b4cf-3a7273dfcd4e)
+
 
 ## 🛠️ Technology Stack
 
