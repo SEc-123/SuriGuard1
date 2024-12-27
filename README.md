@@ -10,6 +10,16 @@ A modern web-based management system for Suricata IDS/IPS, featuring advanced an
   - Live configuration content preview
   - One-click Suricata service restart
 
+- 📈 **Advanced Analytics Dashboard**
+  - Interactive data visualization
+  - Customizable chart creation
+  - Multi-dimensional data aggregation
+  - Preset analytics templates
+  - Time-range filtering
+  - Chart type selector
+  - Advanced data correlation
+  - Predictive trend analysis
+
 - 📊 **System Performance Monitoring**
   - Real-time server resource tracking
   - CPU usage monitoring
