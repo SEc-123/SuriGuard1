@@ -1,21 +1,21 @@
 import React, { useState } from 'react';
 import { 
-  BarChart3, 
-  Activity,
+  BarChart3,
   ScrollText,
   Bell,
   Shield,
   Users,
   Settings,
   Menu,
-  AlertTriangle
+  AlertTriangle,
+  LineChart
 } from 'lucide-react';
 import { Link, useLocation } from 'react-router-dom';
 import Logo from './Logo';
 
 const menuItems = [
   { icon: BarChart3, label: 'Dashboard', path: '/' },
-  { icon: Activity, label: 'Real-time Monitor', path: '/monitor' },
+  { icon: LineChart, label: 'Advanced Analytics', path: '/analytics' },
   { icon: ScrollText, label: 'Log Management', path: '/logs' },
   { icon: AlertTriangle, label: 'Event Management', path: '/events' },
   { icon: Shield, label: 'Rules Management', path: '/rules' },
@@ -23,7 +23,7 @@ const menuItems = [
   { icon: Settings, label: 'Settings', path: '/settings' },
 ];
 
-const Sidebar = () => {
+export default function Sidebar() {
   const location = useLocation();
   const [collapsed, setCollapsed] = useState(false);
 
@@ -33,7 +33,6 @@ const Sidebar = () => {
         collapsed ? 'w-20' : 'w-[220px]'
       }`}
     >
-      {/* Logo Section - Removed unnecessary padding */}
       <div className="flex-shrink-0">
         {collapsed ? (
           <div className="h-[60px] flex items-center justify-center">
@@ -44,7 +43,6 @@ const Sidebar = () => {
         )}
       </div>
 
-      {/* Toggle Button */}
       <button 
         onClick={() => setCollapsed(!collapsed)}
         className="p-2 hover:bg-gray-800 rounded-lg mx-4 my-2 flex items-center justify-center"
@@ -52,7 +50,6 @@ const Sidebar = () => {
         <Menu size={20} />
       </button>
       
-      {/* Navigation */}
       <nav className="mt-6 flex-1">
         {menuItems.map((item) => {
           const Icon = item.icon;
@@ -77,7 +74,6 @@ const Sidebar = () => {
         })}
       </nav>
 
-      {/* Version Info */}
       {!collapsed && (
         <div className="p-4 text-xs text-gray-500 border-t border-gray-800">
           Version 1.0.0
@@ -85,6 +81,4 @@ const Sidebar = () => {
       )}
     </div>
   );
-};
-
-export default Sidebar;
+}

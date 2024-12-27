@@ -32,11 +32,6 @@ call :init_database
 
 %log% "Deployment completed successfully!"
 
-set /p start_app="Do you want to start the application? (y/n): "
-if /i "%start_app%"=="y" (
-    call :start_application
-)
-
 exit /b 0
 
 :check_prerequisites
@@ -73,9 +68,4 @@ call npm run db:init
 if errorlevel 1 (
     %warn% "Database initialization may have issues"
 )
-exit /b 0
-
-:start_application
-%log% "Starting SuriGuard application..."
-call npm run dev
 exit /b 0

@@ -10,6 +10,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "idb": "^7.1.1",
     "js-yaml": "^4.1.0",
     "lucide-react": "^0.344.0",
     "react": "^18.3.1",
@@ -18,7 +19,7 @@
     "recharts": "^2.12.2"
   },
   "devDependencies": {
-    "@eslint/js": "^9.9.1",
+    "@eslint/js": "^9.9.1", 
     "@types/js-yaml": "^4.0.9",
     "@types/react": "^18.3.5",
     "@types/react-dom": "^18.3.0",
