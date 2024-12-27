@@ -8,6 +8,8 @@ import UserList from './pages/users/UserList';
 import Settings from './pages/settings/Settings';
 import RulesManagement from './pages/rules/RulesManagement';
 import LogManagement from './pages/logs/LogManagement';
+import LogList from './pages/logs/LogList';
+import LogAnalytics from './pages/logs/LogAnalytics';
 import EventList from './pages/events/EventList';
 
 function App() {
@@ -32,13 +34,17 @@ function App() {
           </PrivateRoute>
         } />
         
-        <Route path="/logs/*" element={
+        <Route path="/logs" element={
           <PrivateRoute requiredPermission="logs">
             <AppLayout>
               <LogManagement />
             </AppLayout>
           </PrivateRoute>
-        } />
+        }>
+          <Route path="list" element={<LogList />} />
+          <Route path="analytics" element={<LogAnalytics />} />
+          <Route index element={<LogList />} />
+        </Route>
         
         <Route path="/events" element={
           <PrivateRoute requiredPermission="events">

@@ -11,6 +11,7 @@ export default function RulesList() {
   const [searchTerm, setSearchTerm] = useState('');
   const [editingRule, setEditingRule] = useState<Rule | null>(null);
   const [isEditorOpen, setIsEditorOpen] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     loadRuleFiles();
@@ -36,19 +37,41 @@ export default function RulesList() {
 
   const loadRules = async (filePath: string) => {
     try {
+      setIsLoading(true);
       const fileRules = await getRuleFileContent(filePath);
       setRules(fileRules);
     } catch (error) {
       console.error('Failed to load rules:', error);
+    } finally {
+      setIsLoading(false);
     }
   };
 
   const handleToggleRule = async (rule: Rule) => {
     try {
+      setIsLoading(true);
+      // Optimistically update the UI
+      setRules(prevRules => 
+        prevRules.map(r => 
+          r.options.sid === rule.options.sid 
+            ? { ...r, enabled: !r.enabled }
+            : r
+        )
+      );
+      
       await toggleRuleStatus(selectedFile, rule);
-      await loadRules(selectedFile);
     } catch (error) {
       console.error('Failed to toggle rule:', error);
+      // Revert the optimistic update on error
+      setRules(prevRules => 
+        prevRules.map(r => 
+          r.options.sid === rule.options.sid 
+            ? { ...r, enabled: rule.enabled }
+            : r
+        )
+      );
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -56,10 +79,13 @@ export default function RulesList() {
     if (!rule.options.sid) return;
     if (window.confirm('Are you sure you want to delete this rule?')) {
       try {
+        setIsLoading(true);
         await deleteRule(selectedFile, rule.options.sid);
         await loadRules(selectedFile);
       } catch (error) {
         console.error('Failed to delete rule:', error);
+      } finally {
+        setIsLoading(false);
       }
     }
   };
@@ -79,6 +105,7 @@ export default function RulesList() {
             setIsEditorOpen(true);
           }}
           className="bg-blue-600 text-white px-4 py-2 rounded-lg flex items-center"
+          disabled={isLoading}
         >
           <Plus size={20} className="mr-2" />
           Add Rule
@@ -92,6 +119,7 @@ export default function RulesList() {
               value={selectedFile}
               onChange={(e) => setSelectedFile(e.target.value)}
               className="border rounded-lg px-4 py-2 focus:outline-none focus:border-blue-500"
+              disabled={isLoading}
             >
               {ruleFiles.map(file => (
                 <option key={file} value={file}>{file}</option>
@@ -131,6 +159,7 @@ export default function RulesList() {
                     <button
                       onClick={() => handleToggleRule(rule)}
                       className={`text-${rule.enabled ? 'green' : 'gray'}-600`}
+                      disabled={isLoading}
                     >
                       {rule.enabled ? <ToggleRight size={20} /> : <ToggleLeft size={20} />}
                     </button>
@@ -158,12 +187,14 @@ export default function RulesList() {
                           setIsEditorOpen(true);
                         }}
                         className="text-blue-600 hover:text-blue-900"
+                        disabled={isLoading}
                       >
                         <Edit2 size={18} />
                       </button>
                       <button
                         onClick={() => handleDeleteRule(rule)}
                         className="text-red-600 hover:text-red-900"
+                        disabled={isLoading}
                       >
                         <Trash2 size={18} />
                       </button>
