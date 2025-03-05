@@ -2,7 +2,7 @@
 
 A modern web-based management system for Suricata IDS/IPS, featuring advanced analytics and visualization capabilities.
 
-TEST SITE
+online demo without suricata
 https://suriguardtest.netlify.app/
 ## Key Features
 
