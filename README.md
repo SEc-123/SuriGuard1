@@ -277,15 +277,7 @@ This revised structure follows best practices by clearly separating source code,
    - **Single-Line Rules Only**: The current implementation requires each rule to be on a single line. Multi-line rules are not supported and may cause errors or be ignored.
 **Example for Rules**
  - alert tcp any any -> any 80 (msg:"Detect HTTP GET Request"; flow:to_server,established; content:"GET"; http_method; classtype:web-application-attack; sid:1000001; rev:1;)
- - alert tcp any any -> any 80 (
-    msg:"Detect HTTP GET Request";
-    flow:to_server,established;
-    content:"GET";
-    http_method;
-    classtype:web-application-attack;
-    sid:1000001;
-    rev:1;
-)
+
 
 
 ## ≡ƒÜÇ Quick Start
