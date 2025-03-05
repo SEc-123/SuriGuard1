@@ -280,6 +280,10 @@ This revised structure follows best practices by clearly separating source code,
 **Example for Rules**
  - alert tcp any any -> any 80 (msg:"Detect HTTP GET Request"; flow:to_server,established; content:"GET"; http_method; classtype:web-application-attack; sid:1000001; rev:1;)
 
+ **3. Suricata Configuration File (`suricata.yaml`)**
+ **Default File Path**
+- By default, SuriGuard1 reads the Suricata configuration file from:
+  ```src/config/core.config.ts
 
 
 ## ≡ƒÜÇ Quick Start
