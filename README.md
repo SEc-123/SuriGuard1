@@ -283,7 +283,7 @@ This revised structure follows best practices by clearly separating source code,
  **3. Suricata Configuration File (`suricata.yaml`)**
  **Default File Path**
 - By default, SuriGuard1 reads the Suricata configuration file from:
-  ```src/config/core.config.ts
+  src/config/core.config.ts
 
 
 ## ≡ƒÜÇ Quick Start
