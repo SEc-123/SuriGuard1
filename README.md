@@ -362,4 +362,8 @@ CREATE TABLE preset_analytics (
 
 ## ≡ƒñ¥ Contributing
 
+##  Project Status
+
+The core features of this project are fully functional, and the system is stable for general use. We are aware of some outstanding issues—such as the lack of full Docker integration and a streamlined installation process. Due to recent personal schedule changes, we are temporarily unable to address these items immediately. However, they are on our roadmap and will be resolved in future updates. Thank you for your patience and understanding. Contributions are welcome!
+
 Contributions are welcome! Please read our [Contributing Guide](CONTRIBUTING.md) for details on our code of conduct and the process for submitting pull requests.
